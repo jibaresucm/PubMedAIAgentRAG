@@ -13,6 +13,9 @@ def download_llm_model(model_id, model_path, model_name):
     )
     
     print(f"Descargado en {final_path}")
+    
+os.makedirs(config.EMBEDDING_MODELS_PATH, exist_ok=True)
+os.makedirs(config.LLM_MODELS_PATH, exist_ok=True)
 
 model_id = "jinaai/jina-embeddings-v5-text-small-retrieval-GGUF"
 model_path = config.EMBEDDING_MODELS_PATH

@@ -7,7 +7,7 @@ tools = {
     "pubmed_downloader" :{
         "name": "pubmed_downloader",
         "description": "Descarga abstracts de estudios PubMed (biomedicina) y los indexa en una base de datos vectorial accesible con la herramienta 'studies_rag'. No devuelve los estudios, solo los indexa a la abse de datos.",
-        "use_description": "Usa esta herramienta cuando necesites investigar temas biomédicos específicos o ampliar información sobre un tema más especifico (como el que usa una lupa sobre un mapa que ya estaba mirando). La busqueda deberá utilizar un lenguaje técnico especifico al campo que se esta estudiando y deberá de ser adaptado para obtener resultados acerca de un tema (que confirmen el sesgo del usuario o lo desmienta). Es obligatorio utilizar el inglés al describir la búsqueda. Esto no devuelve informacion como respuesta si no el numero de documentos que se han indexado a la base de datos. La busqueda será muy general, no entres en especificos ya que queremos que el buscador de PubMed nos devuelva muchos documentos, no solamente unos pocos en concreto. Si no se indexan documentos es porque probablemente ya estén indexados por lo que ya tienes ese conocimiento",
+        "use_description": "Usa esta herramienta cuando necesites investigar temas biomédicos específicos o ampliar información sobre un tema más especifico (como el que usa una lupa sobre un mapa que ya estaba mirando). La busqueda deberá utilizar un lenguaje técnico especifico al campo que se esta estudiando y deberá de ser adaptado para obtener resultados acerca de un tema (que confirmen el sesgo del usuario o lo desmienta). Es obligatorio utilizar el inglés al describir la búsqueda. Tras usar esta herramienta tendrás que usar studies_rag para recibir la información. Si no descarga ningún documento significa que ya estaba en la base de datps",
         "parameters": {
         "type": "object",
         
@@ -18,7 +18,7 @@ tools = {
             },
             "max_results": {
                 "type": "integer",
-                "description": "Número máximo de estudios a recuperar (15 por defecto, si la busqueda es general recomiendo unos 50)."
+                "description": "Número máximo de estudios a recuperar (20 por defecto, se recomiendan unos 40)."
             }
         },
         
@@ -32,7 +32,7 @@ tools = {
     "studies_rag" :{
         "name": "studies_rag",
         "description": "Recoge abstracts de estudios (previamente descargados) de una base de datos vectorial.",
-        "use_description": "Utilizarás esta herramienta para obtener información acerca de un tema en concreto que se este discutiendo con el usuario. La query a la base de datos tendrá que estár optimizada para que su embedding sea cercano a información que queremos obtener. Es decir no solamente lo utilices como una búsqueda, detalla en la query las afirmaciones que quieras encontrar en los estudios. La query se realizará en inglés."
+        "use_description": "Utilizarás esta herramienta para obtener información acerca de un tema en concreto que se este discutiendo con el usuario. La query a la base de datos tendrá que estár optimizada para que su embedding sea cercano a información que queremos obtener. Es decir no solamente lo utilices como una búsqueda, detalla en la query las afirmaciones que quieras encontrar en los estudios. La query se realizará en inglés. La fuente de la información es el id del documento, no la herramienta en si"
 ,
         "parameters": {
         "type": "object",
@@ -43,7 +43,7 @@ tools = {
             },
             "max_results": {
                 "type": "integer",
-                "description": "Número de fragmentos de estudio a recuperar (4 por defecto)."
+                "description": "Número de fragmentos de estudio a recuperar (10 por defecto)."
             }
         },
         "required": ["query"]

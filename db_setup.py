@@ -1,5 +1,9 @@
+import os
+
 import chromadb
 from settings import config
+
+os.makedirs(config.VECTOR_DB_PATH, exist_ok=True)
 
 client = chromadb.PersistentClient(path = config.VECTOR_DB_PATH)
 

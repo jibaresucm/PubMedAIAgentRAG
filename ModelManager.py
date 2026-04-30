@@ -12,7 +12,8 @@ class ModelManager():
                 max_tokens=4096,
                 stop=["<turn|>", "<|tool_response>", "<eos>"],
                 stream=True,
-                echo=False
+                echo=False,
+                temperature=0.4
             )
         
         for chunk in stream:

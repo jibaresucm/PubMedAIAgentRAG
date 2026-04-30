@@ -23,24 +23,107 @@ class UserBubble(ctk.CTkLabel):
 class ModelOutput(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(master, fg_color="transparent")
-        self.pack(fill="x", padx=10, pady=5)
         
-        self.state = "output" #["output", "tool_call", "tool_response", "thinking"]
-        self.current_line_buffer = ""
+        self.state = "output" #["print", "ignore"]
+        self.output_label = None
+        self.wait_chunks = 15
 
     def set_wraplength(self, width):
-        self.configure(wraplength=max(width - 20, 100))
+        pass
 
     def new_output(self, text):
-        """Añade texto y el Label crece solo."""
-        current_text = self.cget("text")
-        self.configure(text=current_text + text)
+        if(self.output_label == None):
+            self.add_base_label()
         
-        self.update_idletasks()
-        self.master.update_idletasks()
+        if "<" in text:
+            self.special_token_buffer = text
+            self.wait_chunks = 15
+            print("Special_token: Waiting..", flush=True)
+            print(self.special_token_buffer)
         
-    def state_change():
+        if ">" in text:
+            self.wait_chunks = 0
+            text = self.special_token_buffer + text
+        
+        if self.wait_chunks > 0:
+            self.special_token_buffer += text
+            self.wait_chunks -= 1
+            return
+        
+        if "<|channel>" in text:
+            splits = text.split("<|channel>")
+            self.add_to_label(splits[0])
+            text = splits[1].strip()
+            self.state = "ignore"
+            self.add_thinking_label()
+            print("Pensando...", flush= "True")
+            
+        if "<channel|>" in text:
+            splits = text.split("<channel|>")
+            text = splits[1].strip()
+            self.state = "print"
+            self.add_base_label()
+            #Start printing print right side [1]
+            
+        if "<|tool_call>" in text:
+            splits = text.split("<|tool_call>")
+            self.add_to_label(splits[0])
+            text = splits[1].strip()
+            self.state = "ignore"
+            self.add_tool_label()
+            print("Utilizando herramienta...", flush= "True")
+
+        if "<tool_call|>" in text:
+            splits = text.split("<tool_call|>")
+            text = splits[1].strip()
+            self.state = "print"
+            self.add_base_label()
+            
+        if self.state == "print":
+            self.add_to_label(text)
+        
+
+    
+    def add_to_label(self, text):
+        print(text, end="", flush=True)
+        current_text = self.output_label.cget("text") + text
+        self.output_label.configure(text = current_text)
         pass
+        
+    
+    def add_base_label(self):
+        self.output_label = ctk.CTkLabel(
+            self, 
+            text="", 
+            font=("Arial", 18), 
+            text_color="#D1D1D1", 
+            justify="left", 
+            anchor="w",
+            wraplength=700
+        )
+        self.output_label.pack()
+
+    
+    def add_thinking_label(self):
+        self.thinking_label = ctk.CTkLabel(
+            self, 
+            text="💭 Pensando...", 
+            font=("Arial", 16, "italic"), 
+            text_color="#5DCCFF",
+            anchor="w"
+        )
+        self.thinking_label.pack()
+        
+    def add_tool_label(self):
+        self.tool_label = ctk.CTkLabel(
+            self, 
+            text="🛠️ Usando herramienta...", 
+            font=("Arial", 16, "bold"), 
+            text_color="#4BFF27",
+            anchor="w"
+        )
+        self.tool_label.pack()
+        
         
     
 
@@ -108,34 +191,19 @@ class App(ctk.CTk):
         #Gestión de mensajes
         self.message_queue = queue.Queue()
         self.bind("<<DataAvailable>>", self.process_queue)
-        
-        #Resize de texto de chat
-        self.chat_frame.bind("<Configure>", self.on_chat_resize)
     
+            
     def scroll_to_bottom(self):
-        # 1. Actualizamos el diseño para que el Label tenga su nuevo tamaño
         self.chat_frame.update_idletasks()
         
-        # 2. Accedemos al Canvas interno que gestiona el scroll
         canvas = self.chat_frame._parent_canvas
         
-        # 3. Forzamos a que el scrollregion (el área total de scroll)
-        # se ajuste al tamaño real de todo lo que hay dentro (bbox="all")
+
         canvas.configure(scrollregion=canvas.bbox("all"))
         
-        # 4. Movemos la vista al final (1.0 = 100%)
+
         canvas.yview_moveto(1.0)
         
-    def on_chat_resize(self, event):
-        """
-        'event' contiene el nuevo ancho (event.width) 
-        del chat_frame que acaba de cambiar.
-        """
-        # Recorremos todos los widgets hijos
-        for widget in self.chat_frame.winfo_children():
-            # Si el hijo es un ModelOutput, actualizamos su ancho
-            if isinstance(widget, ModelOutput):
-                widget.set_wraplength(event.width)
                 
     def process_queue(self, event=None):
         """Esta función solo se ejecuta cuando se dispara el evento."""
@@ -178,6 +246,7 @@ class App(ctk.CTk):
             self.add_model_message()
 
             self.turn = False
+            self.self_scroll = True 
             
             threading.Thread(target=self.send_to_model, args=(prompt, ), daemon=True).start()
             

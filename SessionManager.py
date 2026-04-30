@@ -44,8 +44,5 @@ class SessionManager():
                 
                 for res in tools_responses:
                     self.context += self.context_manager.add_tool_response(res)
-            print("""
-                  ------------TURN ENDED------------
-                  """)
+  
             
-            print(self.context)

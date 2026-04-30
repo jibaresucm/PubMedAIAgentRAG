@@ -3,7 +3,6 @@ import os
 class Settings:
     #Carpetas y paths
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    DOCUMENTS_PATH = os.path.join(BASE_DIR, "documents")
     VECTOR_DB_PATH = os.path.join(BASE_DIR, "vector_db")
     MODELS_PATH = os.path.join(BASE_DIR, "modelos")
     EMBEDDING_MODELS_PATH = os.path.join(MODELS_PATH, "embedding")
@@ -25,7 +24,7 @@ class Settings:
 
 config = Settings()
 
-for path in [config.DOCUMENTS_PATH, config.VECTOR_DB_PATH]:
+for path in [config.VECTOR_DB_PATH]:
     if not os.path.exists(path):
         print("Creating path...")
         os.makedirs(path)
