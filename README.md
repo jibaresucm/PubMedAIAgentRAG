@@ -1,4 +1,4 @@
-#PubMed AI Agent: Sistema de Razonamiento Médico y Recuperación Semántica (RAG)
+# PubMed AI Agent: Sistema de Razonamiento Médico y Recuperación Semántica (RAG)
 
 Agente de IA RAG con herramientas para descargar abstracts directamente desde pubmed y herramientas para acceder a esos documentos.
 
@@ -6,7 +6,7 @@ Utiliza una base de datos vectorial para realizar una busqueda semántica y hace
 
 Manejo del contexto implementado desde 0.
 
-#Como usarlo
+# Como usarlo
 Necesitas instalar todas las dependencias como llama_cpp(compilado si tienes una gráfica), customtkinter, huggingface_hub, chroma_db, biopython...
 
 Deberás descargar un modelo de lenguaje y otro de embeddings con la herramienta que se encuentra en model_downloads, yo descargué Gemma 4 para el LLM.
